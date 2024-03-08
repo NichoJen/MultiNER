@@ -1,1 +1,1 @@
-# Mulit-NER
+# MultiNER
