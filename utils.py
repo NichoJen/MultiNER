@@ -1,7 +1,7 @@
 import torch
 
 
-def tokenize_and_align_labels(tokenizer, examples, label_all_tokens=False, skip_index=-100):
+def tokenize_and_align_labels(examples, tokenizer, label_all_tokens=False, skip_index=-100):
     """
     From assignment 4: use to tokenize and align tokens with labels
     :param tokenizer: tokenizer from huggingface
@@ -78,3 +78,33 @@ def clean_ner_output(ner_output, tokenizer_word_ids):
     real_word_indices = torch.tensor(real_word_indices, dtype=torch.int64)
     clean_output = torch.index_select(ner_output, 0, real_word_indices)
     return clean_output
+
+
+def clean_ner_output_eval(ner_predictions, labels):
+    """
+    remove subwords and padding from outputs and labels and convert labels to seqeval format
+    :param ner_predictions:
+    :type ner_predictions:
+    :param labels:
+    :type labels:
+    :return:
+    :rtype:
+    """
+    indices_to_keep = torch.where(labels != -100, 1, 0)  # get indices that are not
+    indices_to_keep = list(indices_to_keep)
+
+    ner_predictions = list(ner_predictions)
+    labels = list(labels)
+
+    ner_predictions_clean = []
+    labels_clean = []
+
+    for pred, lab, indices in zip(ner_predictions, labels, indices_to_keep):
+        indices = indices.nonzero().T  # get nonzero indices and convert to vector
+        clean_pred = torch.index_select(pred, 0, indices)
+        clean_lab = torch.index_select(lab, 0, indices)
+
+        ner_predictions_clean.append(clean_pred)
+        labels_clean.append(clean_lab)
+
+    return ner_predictions_clean, labels_clean

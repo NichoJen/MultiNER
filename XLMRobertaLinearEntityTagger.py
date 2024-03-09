@@ -4,9 +4,9 @@ import wandb
 from tqdm import tqdm
 
 
-class XLMRobertaLinearClassifier(nn.Module):
+class XLMRobertaLinearEntityTagger(nn.Module):
     def __init__(self, num_classes, xlm_roberta_model):
-        super(XLMRobertaLinearClassifier, self).__init__()
+        super(XLMRobertaLinearEntityTagger, self).__init__()
         self.xlm_roberta = xlm_roberta_model
         self.l1 = nn.Linear(768, num_classes)
 
