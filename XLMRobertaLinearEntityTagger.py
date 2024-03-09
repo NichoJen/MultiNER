@@ -21,6 +21,38 @@ class XLMRobertaLinearEntityTagger(nn.Module):
         logits = self.l1(roberta_output)
         return logits
 
+    def compute_metrics(self, dataloader, device, split=""):
+        self.eval()
+        correct = 0
+        n_real_tokens = 0
+        total_loss = 0
+        with torch.no_grad():
+            for batch in dataloader:
+                inputs = batch["input_ids"].to(device)
+                labels = batch["labels"].to(device)
+                attention_masks = batch["attention_mask"].to(device)
+
+                predicted_logits = self(inputs, attention_masks).transpose(1, 2)
+
+                loss = self.loss(predicted_logits, labels)
+
+                predicted_labels = torch.argmax(predicted_logits, dim=1)
+
+                batch_correct = torch.eq(predicted_labels, labels)
+
+                n_real_tokens_batch = torch.ne(labels, -100).sum()  # number of tokens with label other than -100
+
+                total_loss += loss.item()
+                correct += batch_correct.sum()
+                n_real_tokens += n_real_tokens_batch
+
+        total_loss /= len(dataloader)
+        accuracy = correct / n_real_tokens
+
+        print(f"{split} loss: {total_loss} Accuracy: {correct}/{n_real_tokens} {(accuracy * 100):.2f}%")
+
+        return total_loss, accuracy
+
 
 def train_model(model, lr, epochs, batch_size, train_loader, project_name, device, val_loader=None,
                 test_loader=None):
@@ -61,7 +93,7 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
             train_loss_per_epoch += loss.item()
 
         train_loss_per_epoch /= num_batches
-        _, accuracy = model.compute_metrics(train_loader)
+        _, accuracy = model.compute_metrics(train_loader, device)
 
         metrics = {"train/train_loss_per_epoch": train_loss_per_epoch,
                    "train/accuracy": accuracy,
@@ -71,7 +103,7 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
 
         print(f"epoch loss: {train_loss_per_epoch}")
 
-        val_loss, val_accuracy = model.compute_metrics(val_loader)
+        val_loss, val_accuracy = model.compute_metrics(val_loader, device)
 
         # Log train and validation metrics to wandb
         val_metrics = {"val/val_loss": val_loss,
@@ -92,7 +124,7 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
         run.log_artifact(artifact)
 
     # log test metrics
-    test_loss, test_accuracy = model.compute_metrics(test_loader)
+    test_loss, test_accuracy = model.compute_metrics(test_loader, device)
     wandb.summary['test_accuracy'] = test_loss
     wandb.summary['test_accuracy'] = test_accuracy
 
