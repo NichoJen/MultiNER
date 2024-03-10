@@ -100,7 +100,7 @@ def clean_ner_output_eval(ner_predictions, labels):
     labels_clean = []
 
     for pred, lab, indices in zip(ner_predictions, labels, indices_to_keep):
-        indices = indices.nonzero().T  # get nonzero indices and convert to vector
+        indices = indices.nonzero().T[0]  # get nonzero indices and convert to vector
         clean_pred = torch.index_select(pred, 0, indices)
         clean_lab = torch.index_select(lab, 0, indices)
 
