@@ -244,3 +244,5 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
                     "PER/number": test_metrics["seqeval"]["PER"]["number"]}
 
     wandb.summary.update(test_metrics)
+
+    wandb.finish()
