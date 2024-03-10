@@ -204,7 +204,7 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
                        "val/PER/recall": val_metrics["seqeval"]["PER"]["recall"],
                        "val/PER/f1": val_metrics["seqeval"]["PER"]["f1"],
                        "val/PER/number": val_metrics["seqeval"]["PER"]["number"]}
-        wandb.log({**metrics, **val_metrics})
+        wandb.log({**wandb_metrics, **val_metrics})
 
         # save model checkpoint
         checkpoint_path = 'models/xlm_roberta_wiki_neural_eng_ep_' + str(epoch) + '.pth'
