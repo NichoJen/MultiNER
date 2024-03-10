@@ -243,4 +243,4 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
                     "PER/f1": test_metrics["seqeval"]["PER"]["f1"],
                     "PER/number": test_metrics["seqeval"]["PER"]["number"]}
 
-    wandb.summary.update(test_metrics)
+    wandb.summary = test_metrics
