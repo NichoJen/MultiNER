@@ -128,6 +128,7 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
     for epoch in range(config.epochs):
+        model.train()
         print("epoch: ", epoch)
         train_loss_per_epoch = 0
         steps = 0
