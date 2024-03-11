@@ -111,11 +111,12 @@ def evaluate_model(model, dataloader, device, index_to_label_fn, split=""):
 
 
 def train_model(model, lr, epochs, batch_size, train_loader, project_name, device, val_loader=None,
-                test_loader=None, model_save_path="models/xlm_roberta_wiki_neural"):
+                test_loader=None, model_save_path="models/xlm_roberta_wiki_neural", wandb_name=""):
     num_batches = len(train_loader)
 
     run = wandb.init(
         project=project_name,
+        name=wandb_name,
         config={
             "epochs": epochs,
             "batch_size": batch_size,
@@ -125,10 +126,13 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
     config = wandb.config
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+    optimizer = torch.optim.Adam(model.l1.parameters(), lr=config.lr)
 
     for epoch in range(config.epochs):
-        model.train()
+
+        model.l1.train()  # linear classifier in train mode
+        model.xlm_roberta.eval()  # XLM-Roberta in eval mode since it is not being trained
+
         print("epoch: ", epoch)
         train_loss_per_epoch = 0
         steps = 0
