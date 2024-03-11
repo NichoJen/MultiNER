@@ -111,7 +111,7 @@ def evaluate_model(model, dataloader, device, index_to_label_fn, split=""):
 
 
 def train_model(model, lr, epochs, batch_size, train_loader, project_name, device, val_loader=None,
-                test_loader=None):
+                test_loader=None, model_save_path="models/xlm_roberta_wiki_neural"):
     num_batches = len(train_loader)
 
     run = wandb.init(
@@ -207,7 +207,7 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
         wandb.log({**wandb_metrics, **val_metrics})
 
         # save model checkpoint
-        checkpoint_path = 'models/xlm_roberta_wiki_neural_eng_ep_' + str(epoch) + '.pth'
+        checkpoint_path = model_save_path + "_ep_" + str(epoch) + '.pth'
         torch.save({'epoch': epoch,
                     'model_state_dict': model.l1.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
