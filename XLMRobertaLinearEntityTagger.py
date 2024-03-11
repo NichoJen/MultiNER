@@ -111,12 +111,13 @@ def evaluate_model(model, dataloader, device, index_to_label_fn, split=""):
 
 
 def train_model(model, lr, epochs, batch_size, train_loader, project_name, device, val_loader=None,
-                test_loader=None, model_save_path="models/xlm_roberta_wiki_neural", wandb_name=""):
+                test_loader=None, model_save_path="models/xlm_roberta_wiki_neural", wandb_name=None, wandb_notes=None):
     num_batches = len(train_loader)
 
     run = wandb.init(
         project=project_name,
         name=wandb_name,
+        notes=wandb_notes,
         config={
             "epochs": epochs,
             "batch_size": batch_size,
