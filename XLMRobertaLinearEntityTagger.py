@@ -62,7 +62,7 @@ index_to_label_dict = {0: 'O', 1: 'B-PER', 2: 'I-PER', 3: 'B-ORG', 4: 'I-ORG', 5
 index_to_labels = lambda labels: [index_to_label_dict[label.item()] for label in labels]
 
 
-def evaluate_model(model, dataloader, device, index_to_label_fn, split=""):
+def evaluate_model(model, dataloader, device, index_to_label_fn=index_to_labels, split=""):
     model.eval()
 
     correct = 0
@@ -72,8 +72,10 @@ def evaluate_model(model, dataloader, device, index_to_label_fn, split=""):
     all_predictions = []
     all_references = []
 
+    num_batches = len(dataloader)
+
     with torch.no_grad():
-        for batch in dataloader:
+        for step, batch in (pbar := tqdm(enumerate(dataloader), total=num_batches)):
             inputs = batch["input_ids"].to(device)
             labels = batch["labels"].to(device)
             attention_masks = batch["attention_mask"].to(device)
