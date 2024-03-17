@@ -157,6 +157,7 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
             train_loss_per_epoch += loss.item()
 
         train_loss_per_epoch /= num_batches
+        print("evaluating on train set")
         metrics = evaluate_model(model, train_loader, device, index_to_label_fn=index_to_labels)
 
         wandb_metrics = {"train/train_loss_per_epoch": train_loss_per_epoch,
@@ -186,7 +187,7 @@ def train_model(model, lr, epochs, batch_size, train_loader, project_name, devic
         wandb.log(wandb_metrics)
 
         print(f"epoch loss: {train_loss_per_epoch}")
-
+        print("evaluating on val set")
         val_metrics = evaluate_model(model, val_loader, device, index_to_label_fn=index_to_labels)
 
         # Log train and validation metrics to wandb
