@@ -24,6 +24,10 @@ class XLMRobertaLinearEntityTagger(nn.Module):
         return logits
 
     def compute_metrics(self, dataloader, device, split=""):
+        """"
+        old method to compute metrics
+        """
+        print("deprecated method! use evaluate model instead")
         self.eval()
         correct = 0
         n_real_tokens = 0
@@ -63,6 +67,10 @@ index_to_labels = lambda labels: [index_to_label_dict[label.item()] for label in
 
 
 def evaluate_model(model, dataloader, device, index_to_label_fn=index_to_labels, split=""):
+    """
+    compute loss and evaluation metrics accuracy (my implementation) + metrics with seqeval (accuracy, precision, recall
+    F1 )
+    """
     model.eval()
 
     correct = 0
@@ -96,8 +104,8 @@ def evaluate_model(model, dataloader, device, index_to_label_fn=index_to_labels,
 
             # get labels for seqeval
             clean_predictions, clean_labels = clean_ner_output_eval(predicted_labels, labels)
-            predictions = list(map(index_to_labels, clean_predictions))
-            references = list(map(index_to_labels, clean_labels))
+            predictions = list(map(index_to_label_fn, clean_predictions))
+            references = list(map(index_to_label_fn, clean_labels))
             all_predictions += predictions
             all_references += references
 
@@ -115,6 +123,10 @@ def evaluate_model(model, dataloader, device, index_to_label_fn=index_to_labels,
 def train_model(model, lr, epochs, batch_size, train_loader, project_name, device, val_loader=None,
                 test_loader=None, model_save_path="models/xlm_roberta_wiki_neural", wandb_name=None, wandb_notes=None):
     num_batches = len(train_loader)
+
+    """
+    train on given trainloader; currently must be connected to wandb to train,  log metrics and save models
+    """
 
     run = wandb.init(
         project=project_name,

@@ -3,17 +3,9 @@ import torch
 
 def tokenize_and_align_labels(examples, tokenizer, label_all_tokens=False, skip_index=-100):
     """
-    From assignment 4: use to tokenize and align tokens with labels
-    :param tokenizer: tokenizer from huggingface
-    :type tokenizer: tokenizer
-    :param examples: data sample
-    :type examples:
-    :param label_all_tokens:
-    :type label_all_tokens: bool
-    :param skip_index: value for indices that should skipped
-    :type skip_index: int
-    :return:
-    :rtype:
+    Adapted from assignment 4: use to tokenize and align tokens with labels
+    tokenizer: tokenizer from huggingface
+    examples: data sample
     """
     tokenized_inputs = tokenizer(examples["tokens"], truncation=True, is_split_into_words=True,
                                  padding=True)
@@ -49,10 +41,6 @@ def tokenize_and_align_labels(examples, tokenizer, label_all_tokens=False, skip_
 def get_real_word_indices(word_ids):
     """
     get the starting indices of each word in list of subwords
-    :param word_ids:
-    :type word_ids:
-    :return:
-    :rtype:
     """
     indices = []
     prev_word_idx = None
@@ -66,12 +54,6 @@ def get_real_word_indices(word_ids):
 def clean_ner_output(ner_output, tokenizer_word_ids):
     """
     return ner labels without subwords and padding tokens
-    :param ner_output:
-    :type ner_output:
-    :param tokenizer_word_ids:
-    :type tokenizer_word_ids:
-    :return:
-    :rtype:
     """
     real_word_indices = get_real_word_indices(tokenizer_word_ids)
     # convert to tensor
@@ -83,12 +65,6 @@ def clean_ner_output(ner_output, tokenizer_word_ids):
 def clean_ner_output_eval(ner_predictions, labels):
     """
     remove subwords and padding from outputs and labels and convert labels to seqeval format
-    :param ner_predictions:
-    :type ner_predictions:
-    :param labels:
-    :type labels:
-    :return:
-    :rtype:
     """
     indices_to_keep = torch.where(labels != -100, 1, 0)  # get indices that are not
     indices_to_keep = list(indices_to_keep)

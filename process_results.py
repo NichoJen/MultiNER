@@ -30,7 +30,7 @@ def flatten_seqeval_results(results_dict: dict, sep="-"):
 
 def make_results_df(filepath):
     """
-    extract results from json file an return dataframe
+    extract results from json file and return dataframe
     """
     results_dict = load_json_dict(filepath)
     results_list = []
